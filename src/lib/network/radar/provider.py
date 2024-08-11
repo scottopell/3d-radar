@@ -23,13 +23,14 @@ def sweepMetaFromSweep(sweep: pynexrad.Sweep, offset: int) -> SweepMeta:
 
 
 def scanDataFromScan(scan: pynexrad.Scan) -> ScanData:
-    data = bytearray()
+    total_sweeps_meta_size = sum([len(m.data) for m in scan.sweeps])
+    data = bytearray(total_sweeps_meta_size)
 
     sweeps = []
     offset = 0
     for meta in scan.sweeps:
         sweeps.append(sweepMetaFromSweep(meta, offset))
-        data += bytearray(meta.data)
+        data[offset:] = meta.data
         offset += len(meta.data)
 
     return ScanData(sweeps, data)
